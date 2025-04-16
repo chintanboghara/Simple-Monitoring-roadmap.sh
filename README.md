@@ -1,17 +1,15 @@
 # Simple Monitoring with Netdata
 
-This project demonstrates how to set up a basic monitoring dashboard using [Netdata](https://www.netdata.cloud/), a powerful tool for real-time performance and health monitoring of systems and applications.
+This project demonstrates how to set up a basic monitoring dashboard using [Netdata](https://www.netdata.cloud/). Netdata is a powerful tool for real-time performance and health monitoring of systems and applications.
 
 ## Repository Structure
 
-The repository is organized as follows:
-
-```bash
+```plaintext
 .
 ├── README.md          # Project documentation (this file)
-├── Explanation.md     # Explanation of Scripts
+├── Explanation.md     # Detailed explanation of the scripts
 ├── setup.sh           # Script to install Netdata
-├── test_dashboard.sh  # Script to test the monitoring dashboard by generating system load
+├── test_dashboard.sh  # Script to generate system load and test the dashboard
 └── cleanup.sh         # Script to remove Netdata from the system
 ```
 
@@ -19,47 +17,53 @@ The repository is organized as follows:
 
 ### Step 1: Install Netdata
 
-To install Netdata manually, follow these steps:
+You can install Netdata manually or by using the provided automated script.
 
-1. Open a terminal on the Linux system.
+#### Manual Installation
+
+1. Open a terminal on your Linux system.
 2. Run the official Netdata installation command:
 
    ```bash
    bash <(curl -Ss https://my-netdata.io/kickstart.sh)
    ```
 
-3. Follow any prompts to complete the installation process.
+3. Follow the prompts to complete the installation process.
 
-Alternatively, use the provided `setup.sh` script for an automated installation:
+#### Automated Installation
+
+Alternatively, make the provided `setup.sh` script executable and run it:
 
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
+This script automates the installation process of Netdata.
+
 ### Step 2: Access the Netdata Dashboard
 
-After installation, access the Netdata dashboard via a web browser:
+After installation, open your web browser and navigate to:
 
-- Navigate to:
-  ```
-  http://localhost:19999
-  ```
-- If accessing remotely, replace `localhost` with the server’s IP address (e.g., `http://192.168.1.100:19999`).
+```plaintext
+http://localhost:19999
+```
 
-The dashboard provides real-time visualizations of CPU, memory, disk I/O, network activity, and more.
+If accessing Netdata remotely, replace `localhost` with your server’s IP address (e.g., `http://192.168.1.100:19999`).
+
+The dashboard will display real-time visualizations for CPU, memory, disk I/O, network activity, and more.
 
 ### Step 3: Customize the Dashboard
 
-Netdata allows extensive customization. For this project, enable the CPU frequency collector:
+For this project, customize the dashboard by enabling the CPU frequency collector:
 
-1. Edit the `cpufreq` configuration file:
+1. Open the `cpufreq` configuration file:
 
    ```bash
    sudo nano /etc/netdata/python.d/cpufreq.conf
    ```
 
-2. Ensure it includes:
+2. Add or ensure the file contains the following configuration:
 
    ```yaml
    update_every: 1
@@ -69,25 +73,25 @@ Netdata allows extensive customization. For this project, enable the CPU frequen
    name: cpufreq
    ```
 
-3. Restart Netdata to apply changes:
+3. Restart Netdata to apply the changes:
 
    ```bash
    sudo systemctl restart netdata
    ```
 
-A CPU frequency chart will now appear under the CPU section of the dashboard.
+A new CPU frequency chart will appear in the CPU section of the dashboard.
 
 ### Step 4: Set Up an Alert
 
-Netdata supports health monitoring with customizable alerts. Here, configure an alert for CPU usage exceeding 80%:
+Configure an alert to monitor if CPU usage exceeds 80%.
 
-1. Edit the CPU alert configuration:
+1. Edit the CPU alert configuration file:
 
    ```bash
    sudo nano /etc/netdata/health.d/cpu.conf
    ```
 
-2. Add or update the following:
+2. Add or update the configuration with the following settings:
 
    ```yaml
    alarm: cpu_usage_high
@@ -105,16 +109,16 @@ Netdata supports health monitoring with customizable alerts. Here, configure an 
    sudo systemctl restart netdata
    ```
 
-The alert will trigger when CPU usage exceeds 80% and appear in the "Alarms" section of the dashboard.
+When CPU usage exceeds 80%, the alert will trigger and appear in the "Alarms" section of the dashboard.
 
 ## Automation Scripts
 
-The project includes three shell scripts to streamline setup, testing, and cleanup:
+This project includes three shell scripts to streamline setup, testing, and cleanup.
 
 ### 1. `setup.sh`
 
-- **Purpose**: Installs Netdata on a Linux system.
-- **Usage**:
+- **Purpose:** Installs Netdata on the system.
+- **Usage:**
 
   ```bash
   chmod +x setup.sh
@@ -123,51 +127,55 @@ The project includes three shell scripts to streamline setup, testing, and clean
 
 ### 2. `test_dashboard.sh`
 
-- **Purpose**: Generates system load to test the Netdata dashboard and verify metrics and alerts.
-- **Requirements**: Requires the `stress` tool. Install it with:
+- **Purpose:** Simulates system load to test the Netdata dashboard and verify metrics and alerts.
+- **Requirements:** The `stress` tool must be installed. Install it with:
 
   ```bash
   sudo apt-get install stress
   ```
 
-- **Usage**:
+- **Usage:**
 
   ```bash
   chmod +x test_dashboard.sh
   ./test_dashboard.sh
   ```
 
-- **Behavior**:
+- **Behavior:**  
   - Simulates CPU load with 4 workers.
   - Generates disk I/O by writing a 1GB file.
-  - Runs for 60 seconds to allow observation of dashboard changes.
-  - Cleans up by stopping the stress test and deleting the test file.
+  - Runs for 60 seconds to allow sufficient time to observe dashboard changes.
+  - Cleans up by stopping the stress test and removing the test file.
 
 ### 3. `cleanup.sh`
 
-- **Purpose**: Uninstalls Netdata from the system.
-- **Usage**:
+- **Purpose:** Uninstalls Netdata from the system.
+- **Usage:**
 
   ```bash
   chmod +x cleanup.sh
   ./cleanup.sh
   ```
 
-- **Note**: This uses `apt-get remove netdata`. For a complete removal including configuration files, edit the script to use `apt-get purge netdata`.
+- **Note:** By default, the script uses `apt-get remove netdata`. For a complete removal, including configuration files, modify it to use `apt-get purge netdata`.
 
 ## How to Use This Project
 
+You have two main options:
+
 ### Option 1: Manual Setup
-- Follow the "Setup Instructions" to install Netdata, customize the dashboard, and configure an alert.
-- Open the dashboard to explore real-time metrics manually.
+
+- Follow the setup instructions above to install Netdata, customize the dashboard, and configure alerts.
+- Open the dashboard and monitor system metrics in real time.
 
 ### Option 2: Automated Workflow
+
 - Execute the scripts in order:
 
   ```bash
   ./setup.sh
   ./test_dashboard.sh
-  ./cleanup transformations.sh
+  ./cleanup.sh
   ```
 
-- While `test_dashboard.sh` runs, visit the dashboard to observe the effects of the load and check if the CPU alert triggers.
+- While `test_dashboard.sh` is running, visit the dashboard to observe load-induced changes and verify the CPU alert.
